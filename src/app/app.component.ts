@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { SignalRService } from './services/signal-r.service';
+import { HttpClient } from '@angular/common/http';
 import { Label } from 'ng2-charts';
+import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +12,24 @@ import { Label } from 'ng2-charts';
 export class AppComponent implements OnInit {
   title = 'DesafioLucasFrontend';
 
+  constructor(public signalRService: SignalRService, private http: HttpClient) { }
+
+  ngOnInit() {
+    this.signalRService.startConnection();
+    this.signalRService.addTransferChartDataListener();   
+    this.startHttpRequest();
+    //this.barChartData = this.signalRService.barChartData;
+  }
+
+  public barChartData: ChartDataSets[] = [];
+
+  private startHttpRequest = () => {
+    this.http.get('https://localhost:44323/api/chart')
+      .subscribe(res => {
+        console.log(res);
+      })
+  }
+
   public barChartOptions: ChartOptions = {
     responsive: true,
   };
@@ -17,21 +37,12 @@ export class AppComponent implements OnInit {
   public barChartType: ChartType = 'bar';
   public barChartLegend = true;
   public barChartPlugins = [];
-
-  numero1:number=0;
-  numero2:number=0;
-  numero3:number=0;
-  numero4:number=0;
-  numero5:number=0;
+/*
   public barChartData: ChartDataSets[] = [
-    { data: [this.numero1, this.numero2, this.numero3, this.numero4, this.numero5], label: 'Sensor 1' },
+    { data: [this.numero1, null, this.numero3, this.numero4, this.numero5], label: 'Sensor 1' },
     { data: [this.numero1, this.numero2, this.numero3, this.numero4, this.numero5], label: 'Sensor 2' },
     { data: [this.numero1, this.numero2, this.numero3, this.numero4, this.numero5], label: 'Sensor 3' },
   ];
-
-  ngOnInit(){
-    this.getNumber();
-  }
 
   private getNumber():void{
     let retorno1:number = 0;
@@ -52,10 +63,10 @@ export class AppComponent implements OnInit {
       this.numero3 += retorno3;
       this.numero4 += retorno4;
       this.numero5 += retorno5;
-      this.barChartData[0].data = [this.numero1, this.numero4, this.numero2, this.numero5, this.numero3];
+      this.barChartData[0].data = [this.numero1, null, this.numero2, this.numero5, this.numero3];
       this.barChartData[1].data = [this.numero2, this.numero5, this.numero3, this.numero1, this.numero4];
       this.barChartData[2].data = [this.numero3, this.numero1, this.numero4, this.numero2, this.numero5];
       console.log(retorno1);
       }, 1000);
-  }
+  }*/
 }
